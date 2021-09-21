@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="appProducts"></div>
+  <div id="appTasks"></div>
+  <script>
+    const products = [{ title: 'Burger', price: 121.00 }, { title: 'Pizza', price: 20.00 }];
+    const tasks = [{ title: 'Meet Plan X', done: false }, { title: 'Take Test', done: true }, { title: 'Course Manipulation of Arrays', done: false }];
+
+    const appProducts = document.getElementById('appProducts');
+    products.forEach((product, index) => {
+      appProducts.innerHTML += `<li>${product.title} - ${product.price}</li>`
+    });
+
+    const appTasks = document.getElementById('appTasks');
+    tasks.forEach((task, index) => {
+      const element = `
+         <li>
+          	 <input
+                     type='checkbox'
+                     id='task-${index}'
+                     name='${task.title}'
+                     ${task.done && 'checked'} />
+                  <label for='task-${index}'>${index + 1} - ${task.title}</label>
+         </li>`;
+      appTasks.insertAdjacentHTML('beforeend', element);
+    });
+  </script>
+</body>
+
+</html>
