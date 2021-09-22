@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/lrangelc/course-manipulation-of-arrays#readme",
   "dependencies": {
+    "date-fns": "^2.24.0",
     "express": "^4.17.1",
     "http-server": "^13.0.2"
   },
