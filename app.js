@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const { searchCandidate, addCandidate, getValidSkills, checkIfIdExists } = require('./businessLogic');
 const app = express();
 const candidates = [];
 const skillDB = {};
@@ -20,9 +21,7 @@ function validatePostForm(req, res, next) {
     return res.status(500).send('Need a list of skills');
   }
 
-  const result = candidates.filter((candidate) => candidate.id == req.body.id);
-
-  if (result.length > 0) {
+  if (checkIfIdExists(candidates, req.body.id)) {
     return res.status(404).send('The candidate is already defined');
   }
 
@@ -46,14 +45,9 @@ function validateGet(req, res, next) {
 }
 
 app.post('/candidates', validatePostForm, function (req, res) {
-  candidates.push(req.body);
+  const candidate = req.body;
 
-  req.body.skills.map((skill) => {
-    if (!skillDB[skill]) {
-      skillDB[skill] = [];
-    }
-    skillDB[skill].push(req.body.id);
-  });
+  addCandidate(candidates, skillDB, candidate);
 
   res.sendStatus(200);
 });
@@ -64,42 +58,15 @@ app.get('/candidates/search', validateGet, function (req, res) {
   }
   const skills = req.query['skills'].split(',');
 
-  const validSkill = skills.filter((skill) => {
-    if (skillDB[skill]) {
-      return skill;
-    }
-  });
+  const validSkills = getValidSkills(skillDB, skills);
 
-  if (validSkill.length == 0) {
+  if (validSkills.length == 0) {
     return res.status(404).send('Invalid skill list');
   }
 
-  const candidatesSkill = {};
-  validSkill.forEach((skill) => {
-    if (skillDB[skill]) {
-      skillDB[skill].forEach((candidate) => {
-        if (!candidatesSkill[candidate]) {
-          candidatesSkill[candidate] = 1;
-        } else {
-          candidatesSkill[candidate]++;
-        }
-      });
-    }
-  });
+  const bestCandidate = searchCandidate(candidates, skillDB, validSkills);
 
-  const keys = Object.keys(candidatesSkill);
-
-  let count = 0;
-  let bestCandidate = undefined;
-
-  keys.forEach((key) => {
-    if (candidatesSkill[key] > count) {
-      count = candidatesSkill[key];
-      bestCandidate = candidates.filter((candidate) => candidate.id == key);
-    }
-  });
-
-  res.send(bestCandidate.length > 0 ? bestCandidate[0] : {});
+  res.send(bestCandidate);
 });
 
 app.listen(process.env.HTTP_PORT || 3000);
