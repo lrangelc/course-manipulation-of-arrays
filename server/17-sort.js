@@ -59,3 +59,18 @@ console.log({ orders });
 
 orders.sort((a, b) => b.date.getTime() - a.date.getTime());
 console.log({ orders });
+
+
+const array = ['a', 'bb', 'ccc']; 
+const rta = array.map(item => item.length);
+console.log(rta)
+
+const array = [['🐸','🐱'],'🐹', ['🐯']]; 
+const rta = array.flat();
+console.log(rta)
+
+
+const array = [11,1,13,99,8]; 
+array.sort((a,b) => b - a);
+
+console.log(array);
